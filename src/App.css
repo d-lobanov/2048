@@ -9,7 +9,7 @@
 
 .App-header {
   background-color: #222;
-  height: 150px;
+  height: 50px;
   padding: 20px;
   color: white;
 }
@@ -42,12 +42,20 @@
   justify-content: space-between;
   height: 70px;
   align-items: center;
-  font-size: 2em;
+  font-size: 1.5em;
   font-weight: 100;
 }
 
 .card {
   width: 70px;
   height: 70px;
-  border: 1px solid;
+  line-height: 70px;
+  text-align: center;
+  border-top: 1px solid;
+  border-bottom: 1px solid;
+  border-left: 1px solid;
+}
+
+.card:last-child {
+  border-right: 1px solid;
 }

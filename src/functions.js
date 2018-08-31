@@ -14,29 +14,17 @@ function generateEmptyMap(rows, columns) {
 }
 
 function putRandomCardOnMap(map, maxValue = DEFAULT_CONFIGURATION.maxCardValue) {
-  let row = randInt(map.length);
-  let column = randInt(map[0].length);
+  const allEmptyCoords = map.reduce((result, row, rIndex) => {
+    const rowCoords = row
+      .map((card, cIndex) => ({ row: rIndex, column: cIndex, value: card }))
+      .filter(({ value }) => value === null);
 
-  const numberOfElements = map.length * map[0].length;
-  const value = randomCardNumber(maxValue);
+    return result.concat(rowCoords);
+  }, []);
 
-  for (let attempt = 0; attempt < numberOfElements; attempt++) {
-    if (map[row][column] === null) {
-      map[row][column] = value;
-      break;
-    }
+  const emptyCard = allEmptyCoords[randInt(allEmptyCoords.length)];
 
-    column += 1;
-
-    if (column >= map[0].length) {
-      column = 0;
-      row += 1;
-    }
-
-    if (row >= map.length) {
-      row = 0;
-    }
-  }
+  map[emptyCard.row][emptyCard.column] = randomCardNumber(maxValue);
 
   return map;
 }
@@ -146,12 +134,17 @@ function isAnyVerticalMove(map) {
   return isAnyHorizontalMove(transposeArray(map));
 }
 
-function isGameFinished(map) {
+function isLost(map) {
   return !(isAnyEmptySpace(map) || isAnyHorizontalMove(map) || isAnyVerticalMove(map));
+}
+
+function isWin(map) {
+  return map.some(row => row.some(card => card === 2048));
 }
 
 export {
   generateMap,
   moveElements,
-  isGameFinished
+  isLost,
+  isWin
 };
