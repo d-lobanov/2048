@@ -2,7 +2,11 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Row from './Row';
-import { generateMap, moveValuesLeft, moveValuesRight, putRandomCardOnMap, transposeArray } from './functions';
+import {
+  generateMap,
+  isGameFinished,
+  moveElements
+} from './functions';
 
 class App extends Component {
   constructor(props) {
@@ -14,38 +18,24 @@ class App extends Component {
   }
 
   handleKeyDown = (e) => {
-    const callback = {
-      37: this.onKeyLeft,
-      38: this.onKeyUp,
-      39: this.onKeyRight,
-      40: this.onKeyDown,
+    const direction = {
+      37: 'left',
+      38: 'up',
+      39: 'right',
+      40: 'down'
     }[e.keyCode];
 
-    return callback && callback();
-  };
+    if (!direction) {
+      return;
+    }
 
-  onKeyLeft = () => {
-    const newGameMap = putRandomCardOnMap(moveValuesLeft(this.state.gameMap));
+    const newMap = moveElements(this.state.gameMap, direction);
 
-    this.setState({ gameMap: newGameMap });
-  };
+    this.setState({ gameMap: newMap });
 
-  onKeyUp = () => {
-    const newGameMap = putRandomCardOnMap(transposeArray(moveValuesLeft(transposeArray(this.state.gameMap))));
-
-    this.setState({ gameMap: newGameMap });
-  };
-
-  onKeyRight = () => {
-    const newGameMap = putRandomCardOnMap(moveValuesRight(this.state.gameMap));
-
-    this.setState({ gameMap: newGameMap });
-  };
-
-  onKeyDown = () => {
-    const newGameMap = putRandomCardOnMap(transposeArray(moveValuesRight(transposeArray(this.state.gameMap))));
-
-    this.setState({ gameMap: newGameMap });
+    if (isGameFinished(newMap)) {
+      alert('Game finished');
+    }
   };
 
   componentWillMount() {

@@ -13,7 +13,7 @@ function generateEmptyMap(rows, columns) {
   return Array(rows).fill(null).map(() => Array(columns).fill(null));
 }
 
-function putRandomCardOnMap(map, maxValue = 2) {
+function putRandomCardOnMap(map, maxValue = DEFAULT_CONFIGURATION.maxCardValue) {
   let row = randInt(map.length);
   let column = randInt(map[0].length);
 
@@ -42,18 +42,14 @@ function putRandomCardOnMap(map, maxValue = 2) {
 }
 
 function fillMap(map, numberOfCards, maxValue) {
-  putRandomCardOnMap(map, maxValue);
-  putRandomCardOnMap(map, maxValue);
-  putRandomCardOnMap(map, maxValue);
-
-  return map;
+  return Array(numberOfCards).fill(null).reduce((newMap) => putRandomCardOnMap(newMap, maxValue), map);
 }
 
 const DEFAULT_CONFIGURATION = {
   numberOfRows: 4,
   numberOfElementsInRow: 4,
-  maxCardValue: 2,
-  numberOfNotEmptyCards: 10
+  maxCardValue: 4,
+  numberOfNotEmptyCards: 2
 };
 
 function generateMap(options) {
@@ -101,10 +97,61 @@ function moveValuesRight(array) {
     .map(row => row.reverse());
 }
 
+function moveElements(map, direction) {
+  let newMap = map.slice();
+
+  switch (direction) {
+    case 'left':
+      newMap = moveValuesLeft(newMap);
+      break;
+    case 'up':
+      newMap = transposeArray(moveValuesLeft(transposeArray(newMap)));
+      break;
+    case 'right':
+      newMap = moveValuesRight(newMap);
+      break;
+    case 'down':
+      newMap = transposeArray(moveValuesRight(transposeArray(newMap)));
+      break;
+  }
+
+  return areArraysEqual(newMap, map) ? newMap : putRandomCardOnMap(newMap);
+}
+
+function areArraysEqual(array1, array2) {
+  if (array1.length !== array2.length) {
+    return false;
+  }
+
+  return array1.every(function (row, rIndex) {
+    if (row.length !== array2[rIndex].length) {
+      return false;
+    }
+
+    return row.every((card, cIndex) => card === array2[rIndex][cIndex]);
+  });
+}
+
+function isAnyEmptySpace(map) {
+  return map.some(row => row.some(card => card === null));
+}
+
+function isAnyHorizontalMove(map) {
+  return map.some(row => {
+    return row.reduce((result, val, i) => result || (val && val === row[i - 1]), false);
+  })
+}
+
+function isAnyVerticalMove(map) {
+  return isAnyHorizontalMove(transposeArray(map));
+}
+
+function isGameFinished(map) {
+  return !(isAnyEmptySpace(map) || isAnyHorizontalMove(map) || isAnyVerticalMove(map));
+}
+
 export {
   generateMap,
-  moveValuesLeft,
-  moveValuesRight,
-  transposeArray,
-  putRandomCardOnMap
+  moveElements,
+  isGameFinished
 };
