@@ -14,15 +14,15 @@ function generateEmptyMap(rows, columns) {
 }
 
 function putRandomCardOnMap(map, maxValue = DEFAULT_CONFIGURATION.maxCardValue) {
-  const allEmptyCoords = map.reduce((result, row, rIndex) => {
-    const rowCoords = row
+  const allEmptyCards = map.reduce((result, row, rIndex) => {
+    const emptyCards = row
       .map((card, cIndex) => ({ row: rIndex, column: cIndex, value: card }))
       .filter(({ value }) => value === null);
 
-    return result.concat(rowCoords);
+    return result.concat(emptyCards);
   }, []);
 
-  const emptyCard = allEmptyCoords[randInt(allEmptyCoords.length)];
+  const emptyCard = allEmptyCards[randInt(allEmptyCards.length)];
 
   map[emptyCard.row][emptyCard.column] = randomCardNumber(maxValue);
 
@@ -142,9 +142,34 @@ function isWin(map) {
   return map.some(row => row.some(card => card === 2048));
 }
 
+function debounceTimes(callback, times) {
+  let counter = 0;
+  let timer = null;
+
+  return () => {
+    counter += 1;
+    clearTimeout(timer);
+
+    if (counter >= times) {
+      counter = 0;
+      callback();
+    } else {
+      timer = setTimeout(() => counter = 0, 1000);
+    }
+  };
+}
+
+function runCheat(map) {
+  const sortHorizontally = items => items.map(row => row.sort((a, b) => b - a));
+
+  return transposeArray(sortHorizontally(transposeArray(sortHorizontally(map))));
+}
+
 export {
   generateMap,
   moveElements,
   isLost,
-  isWin
+  isWin,
+  debounceTimes,
+  runCheat
 };

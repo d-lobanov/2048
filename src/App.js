@@ -3,10 +3,12 @@ import Swipeable from 'react-swipeable'
 import './App.css';
 import Row from './Row';
 import {
+  debounceTimes,
   generateMap,
   isLost,
   isWin,
-  moveElements
+  moveElements,
+  runCheat
 } from './functions';
 
 class App extends Component {
@@ -44,7 +46,7 @@ class App extends Component {
       ? deltaX > 0 ? 'left' : 'right'
       : deltaY > 0 ? 'up' : 'down';
 
-    this.move(direction);
+    this.move(direction);0
   };
 
   move = (direction) => {
@@ -68,11 +70,17 @@ class App extends Component {
     }
   }
 
+  activateCheat = debounceTimes(() => {
+    const gameMap = runCheat(this.state.gameMap);
+
+    this.setState({ gameMap });
+  }, 3);
+
   render() {
     return (
       <div className="App">
         <header className="App-header">
-          <h1 className="App-title">2048</h1>
+          <h1 className="App-title" onClick={this.activateCheat}>2048</h1>
         </header>
         <Swipeable className="game-map"
                    trackMouse
