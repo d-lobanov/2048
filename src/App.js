@@ -46,7 +46,7 @@ class App extends Component {
       ? deltaX > 0 ? 'left' : 'right'
       : deltaY > 0 ? 'up' : 'down';
 
-    this.move(direction);0
+    this.move(direction);
   };
 
   move = (direction) => {

@@ -92,12 +92,15 @@ function moveElements(map, direction) {
     case 'left':
       newMap = moveValuesLeft(newMap);
       break;
+
     case 'up':
       newMap = transposeArray(moveValuesLeft(transposeArray(newMap)));
       break;
+
     case 'right':
       newMap = moveValuesRight(newMap);
       break;
+
     case 'down':
       newMap = transposeArray(moveValuesRight(transposeArray(newMap)));
       break;
